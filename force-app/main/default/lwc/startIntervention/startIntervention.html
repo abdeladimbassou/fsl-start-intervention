@@ -1,0 +1,26 @@
+<template>
+    <lightning-quick-action-panel header="Start Intervention">
+        <div class="slds-p-around_small">
+            <template lwc:if={isIdle}>
+                <p class="slds-m-bottom_small">Your current position will be recorded on this appointment and converted into an address.</p>
+            </template>
+            <template lwc:if={isLocating}>
+                <lightning-spinner alternative-text="Recording position" size="small"></lightning-spinner>
+                <p>Recording your position…</p>
+            </template>
+            <template lwc:if={isDone}>
+                <p class="slds-text-color_success slds-m-bottom_x-small">Intervention started.</p>
+                <p><strong>Address:</strong> {addressLabel}</p>
+            </template>
+            <template lwc:if={errorMessage}>
+                <p class="slds-text-color_error">{errorMessage}</p>
+            </template>
+        </div>
+        <div slot="footer">
+            <lightning-button label="Close" onclick={close} class="slds-m-right_x-small"></lightning-button>
+            <template lwc:if={canStart}>
+                <lightning-button variant="brand" label="Start" onclick={handleStart}></lightning-button>
+            </template>
+        </div>
+    </lightning-quick-action-panel>
+</template>
