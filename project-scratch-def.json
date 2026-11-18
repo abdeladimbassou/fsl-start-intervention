@@ -1,7 +1,6 @@
 {
   "orgName": "Field Service Toolkit CI",
   "edition": "Developer",
-  "features": ["FieldServiceDispatcherUser", "FieldServiceMobileUser", "FieldServiceSchedulingUser"],
   "settings": {
     "fieldServiceSettings": {
       "fieldServiceOrgPref": true
