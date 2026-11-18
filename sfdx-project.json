@@ -1,7 +1,19 @@
 {
-  "packageDirectories": [{ "path": "force-app", "default": true }],
+  "packageDirectories": [
+    {
+      "path": "force-app",
+      "default": true,
+      "package": "Field Service Toolkit",
+      "versionName": "Version 1.0",
+      "versionNumber": "1.0.0.NEXT",
+      "versionDescription": "Start Intervention, Order Part and Complete Intervention quick actions for Field Service."
+    }
+  ],
   "name": "field-service-toolkit",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "62.0"
+  "sourceApiVersion": "62.0",
+  "packageAliases": {
+    "Field Service Toolkit": "0Hofj0000005avhCAA"
+  }
 }
