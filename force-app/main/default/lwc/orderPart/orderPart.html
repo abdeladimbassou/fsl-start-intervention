@@ -1,0 +1,22 @@
+<template>
+    <lightning-quick-action-panel header="Order Part">
+        <template lwc:if={isDone}>
+            <p class="slds-text-color_success">Part requested. The product request is linked to the work order.</p>
+        </template>
+        <template lwc:else>
+            <lightning-record-picker label="Part" object-api-name="Product2" onchange={handleProduct} required></lightning-record-picker>
+            <lightning-input type="number" label="Quantity" value={quantity} min="1" max="9999" onchange={handleQuantity} required></lightning-input>
+            <lightning-input type="date" label="Needed by" value={needBy} onchange={handleNeedBy}></lightning-input>
+            <lightning-textarea label="Notes" value={notes} onchange={handleNotes}></lightning-textarea>
+            <template lwc:if={errorMessage}>
+                <p class="slds-text-color_error">{errorMessage}</p>
+            </template>
+        </template>
+        <div slot="footer">
+            <lightning-button label="Close" onclick={close} class="slds-m-right_x-small"></lightning-button>
+            <template lwc:if={canSubmit}>
+                <lightning-button variant="brand" label="Order" onclick={handleOrder} disabled={isSaving}></lightning-button>
+            </template>
+        </div>
+    </lightning-quick-action-panel>
+</template>

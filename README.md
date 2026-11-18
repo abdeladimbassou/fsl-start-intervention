@@ -1,45 +1,56 @@
-# Start Intervention for Salesforce Field Service
+# Field Service Toolkit for Salesforce
 
-A quick action for **Service Appointments** that a technician taps when arriving on site. It:
+[![Apex tests](https://github.com/abdeladimbassou/fsl-start-intervention/actions/workflows/apex-tests.yml/badge.svg)](https://github.com/abdeladimbassou/fsl-start-intervention/actions/workflows/apex-tests.yml)
+![License: MIT](https://img.shields.io/badge/license-MIT-blue)
 
-1. records the technician's position (native location in the Field Service mobile app, browser geolocation elsewhere);
-2. converts it into a readable address (reverse geocoding, pluggable provider);
-3. moves the appointment to **In Progress** and sets its **Actual Start Time**.
+Three quick actions for **Service Appointments** that cover a technician's day on site, from arrival to sign-off. Built from real Field Service rollouts, rewritten from scratch with no client code.
 
-The intervention still starts if the address cannot be resolved: the position is always saved.
+| Action | What it does |
+|---|---|
+| **Start Intervention** | Records the technician's position (native location in the Field Service mobile app, browser geolocation elsewhere), converts it into an address, sets the appointment to In Progress with its actual start time. |
+| **Order Part** | Requests a part from the field: creates a Product Request and its line item, linked to the appointment's work order. |
+| **Complete Intervention** | Captures a work summary and the technician's and customer's signatures, generates a signed PDF service report attached to the appointment, sets it to Completed with its actual end time. |
+
+The technician is never blocked: if the address cannot be resolved, the position is still saved.
+
+## Install
+
+Requires **Field Service** enabled in the org (and Field Service inventory for Order Part).
+
+**One-click install** (unlocked package): *link added with the first package version.*
+
+**From source:**
+
+```bash
+sf project deploy start --source-dir force-app --target-org my-org --test-level RunLocalTests
+sf org assign permset --name Field_Service_Toolkit --target-org my-org
+```
+
+Then add the three actions to the Service Appointment page layout and to the Field Service mobile action list.
 
 ## What's inside
 
 | Component | Role |
 |---|---|
-| `startIntervention` (LWC, screen quick action) | Gets the position and calls Apex |
-| `InterventionController` (Apex) | Validates input, geocodes, updates the appointment in user mode |
-| `ReverseGeocoder` (interface) | Plug in Google, Mapbox or an internal service |
-| `NominatimReverseGeocoder` | Default provider: OpenStreetMap Nominatim |
-| `Start_Location__c`, `Start_Address__c` | New fields on Service Appointment |
-| `Start_Intervention` permission set | Apex and field access |
-| `InterventionControllerTest` | Tests for success, geocoding failure, invalid input and the Nominatim parser |
-
-## Install
-
-Requires **Field Service** enabled in the org.
-
-```bash
-sf project deploy start --source-dir force-app --target-org my-org --test-level RunSpecifiedTests --tests InterventionControllerTest
-sf org assign permset --name Start_Intervention --target-org my-org
-```
-
-Then add the **Start Intervention** action to the Service Appointment page layout (and to the mobile action list for the Field Service app).
-
-## Using another geocoding provider
-
-Nominatim's usage policy allows only low volumes. For production, implement `ReverseGeocoder` and set it in `InterventionController.geocoder`, with the provider's host in a Remote Site Setting or a Named Credential.
+| `startIntervention`, `orderPart`, `completeIntervention` (LWC) | Screen quick actions |
+| `signaturePad` (LWC) | Finger, pen or mouse signature, exported as PNG |
+| `InterventionController`, `OrderPartController`, `CompleteInterventionController` (Apex) | Validation and updates in user mode |
+| `ReverseGeocoder` + `NominatimReverseGeocoder` | Pluggable geocoding, OpenStreetMap by default |
+| `ServiceReport` (Visualforce, PDF) + `ServiceReportController` | The signed service report |
+| `Start_Location__c`, `Start_Address__c`, `Customer_Signed_By__c` | Fields on Service Appointment |
+| `Field_Service_Toolkit` permission set | Apex, page and field access |
+| Apex tests | One test class per controller |
 
 ## Design choices
 
-- **Callout before DML**: Salesforce forbids a callout after uncommitted DML, so the address is resolved first.
-- **User mode** for the query and the update: the technician's sharing and field permissions apply.
-- **Never block the technician**: a geocoding failure leaves the address empty but still starts the intervention.
+- **Callout before DML** for geocoding: Salesforce forbids a callout after uncommitted DML.
+- **User mode** for every query and write: the technician's sharing and field permissions apply.
+- **Signatures and report as Files** on the appointment, so they sync to the mobile app and stay with the record.
+- **Pluggable providers**: implement `ReverseGeocoder` for Google, Mapbox or an internal service. Nominatim's usage policy allows only low volumes.
+
+## Continuous integration
+
+`.github/workflows/apex-tests.yml` creates a scratch org with Field Service, deploys the toolkit and runs the Apex tests on every push and pull request. It needs one repository secret, `DEVHUB_SFDX_AUTH_URL` (see `sf org display --verbose` on your Dev Hub).
 
 ## License
 

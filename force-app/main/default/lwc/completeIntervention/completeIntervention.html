@@ -1,0 +1,25 @@
+<template>
+    <lightning-quick-action-panel header="Complete Intervention">
+        <template lwc:if={isDone}>
+            <p class="slds-text-color_success slds-m-bottom_small">Intervention completed. The signed service report is attached to the appointment.</p>
+        </template>
+        <template lwc:else>
+            <lightning-textarea label="Work summary" value={workSummary} onchange={handleSummary} max-length="32000"></lightning-textarea>
+            <lightning-input label="Customer name" value={customerName} onchange={handleName} required class="slds-m-bottom_small"></lightning-input>
+            <c-signature-pad label="Technician signature" data-who="technician"></c-signature-pad>
+            <c-signature-pad label="Customer signature" data-who="customer"></c-signature-pad>
+            <template lwc:if={errorMessage}>
+                <p class="slds-text-color_error">{errorMessage}</p>
+            </template>
+            <template lwc:if={isSaving}>
+                <lightning-spinner alternative-text="Generating the report" size="small"></lightning-spinner>
+            </template>
+        </template>
+        <div slot="footer">
+            <lightning-button label="Close" onclick={close} class="slds-m-right_x-small"></lightning-button>
+            <template lwc:if={canSubmit}>
+                <lightning-button variant="brand" label="Complete and sign" onclick={handleComplete}></lightning-button>
+            </template>
+        </div>
+    </lightning-quick-action-panel>
+</template>

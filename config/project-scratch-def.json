@@ -1,0 +1,10 @@
+{
+  "orgName": "Field Service Toolkit CI",
+  "edition": "Developer",
+  "features": ["FieldService"],
+  "settings": {
+    "fieldServiceSettings": {
+      "fieldServiceOrgPref": true
+    }
+  }
+}

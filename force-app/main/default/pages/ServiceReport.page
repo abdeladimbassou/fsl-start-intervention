@@ -1,0 +1,47 @@
+<apex:page controller="ServiceReportController" renderAs="pdf" applyBodyTag="false" applyHtmlTag="false" showHeader="false" standardStylesheets="false">
+<html>
+<head>
+<style>
+  body { font-family: Arial, sans-serif; font-size: 12px; color: #181818; }
+  h1 { font-size: 20px; color: #032E61; margin: 0 0 4px 0; }
+  .muted { color: #5c5c5c; }
+  table.fields { width: 100%; border-collapse: collapse; margin-top: 16px; }
+  table.fields td { padding: 6px 8px; border-bottom: 1px solid #e5e5e5; vertical-align: top; }
+  table.fields td.label { width: 30%; color: #5c5c5c; }
+  .summary { margin-top: 16px; padding: 10px; background: #f3f3f3; }
+  table.sign { width: 100%; margin-top: 28px; }
+  table.sign td { width: 50%; padding-right: 16px; vertical-align: top; }
+  .box { border: 1px solid #c9c9c9; height: 110px; text-align: center; }
+  .box img { max-height: 100px; max-width: 100%; }
+</style>
+</head>
+<body>
+  <h1>Service report</h1>
+  <div class="muted">{!appointment.AppointmentNumber} · {!appointment.Account.Name}</div>
+
+  <table class="fields">
+    <tr><td class="label">Subject</td><td>{!appointment.Subject}</td></tr>
+    <tr><td class="label">Status</td><td>{!appointment.Status}</td></tr>
+    <tr><td class="label">Site</td><td>{!appointment.Street} {!appointment.City} {!appointment.Country}</td></tr>
+    <tr><td class="label">Technician location at start</td><td>{!appointment.Start_Address__c}</td></tr>
+    <tr><td class="label">Started</td><td><apex:outputField value="{!appointment.ActualStartTime}"/></td></tr>
+    <tr><td class="label">Completed</td><td><apex:outputField value="{!appointment.ActualEndTime}"/></td></tr>
+  </table>
+
+  <div class="summary"><strong>Work summary</strong><br/><apex:outputText value="{!appointment.Description}"/></div>
+
+  <table class="sign">
+    <tr>
+      <td>
+        <div class="box"><apex:image value="{!technicianSignatureUrl}" rendered="{!NOT(ISBLANK(technicianSignatureUrl))}"/></div>
+        <div>Technician: {!technicianName}</div>
+      </td>
+      <td>
+        <div class="box"><apex:image value="{!customerSignatureUrl}" rendered="{!NOT(ISBLANK(customerSignatureUrl))}"/></div>
+        <div>Customer: {!appointment.Customer_Signed_By__c}</div>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+</apex:page>

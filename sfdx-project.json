@@ -1,6 +1,6 @@
 {
   "packageDirectories": [{ "path": "force-app", "default": true }],
-  "name": "fsl-start-intervention",
+  "name": "field-service-toolkit",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
   "sourceApiVersion": "62.0"

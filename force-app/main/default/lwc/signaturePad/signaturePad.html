@@ -1,0 +1,8 @@
+<template>
+    <div class="pad">
+        <p class="slds-form-element__label">{label}</p>
+        <canvas class="canvas" width="560" height="180"
+            onpointerdown={start} onpointermove={move} onpointerup={end} onpointerleave={end}></canvas>
+        <lightning-button variant="base" label="Clear" onclick={clear}></lightning-button>
+    </div>
+</template>
