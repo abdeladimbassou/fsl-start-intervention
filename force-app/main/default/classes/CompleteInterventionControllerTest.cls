@@ -14,40 +14,46 @@ private class CompleteInterventionControllerTest {
 
     @IsTest
     static void completeSavesSignaturesReportAndEndTime() {
-        ServiceAppointment sa = newAppointment();
-        Test.startTest();
-        CompleteInterventionController.CompleteResult result =
-            CompleteInterventionController.completeIntervention(sa.Id, 'Replaced the fuser unit', 'Jane Customer', PNG, PNG);
-        Test.stopTest();
+        System.runAs(ToolkitTestSupport.toolkitUser()) {
+            ServiceAppointment sa = newAppointment();
+            Test.startTest();
+            CompleteInterventionController.CompleteResult result =
+                CompleteInterventionController.completeIntervention(sa.Id, 'Replaced the fuser unit', 'Jane Customer', PNG, PNG);
+            Test.stopTest();
 
-        ServiceAppointment saved = [SELECT ActualEndTime, Customer_Signed_By__c, Description FROM ServiceAppointment WHERE Id = :sa.Id];
-        System.assertNotEquals(null, saved.ActualEndTime);
-        System.assertEquals('Jane Customer', saved.Customer_Signed_By__c);
-        System.assertEquals('Replaced the fuser unit', saved.Description);
-        System.assertNotEquals(null, result.reportId);
-        System.assertEquals(3, [SELECT COUNT() FROM ContentDocumentLink WHERE LinkedEntityId = :sa.Id], 'Two signatures and one report');
+            ServiceAppointment saved = [SELECT ActualEndTime, Customer_Signed_By__c, Description FROM ServiceAppointment WHERE Id = :sa.Id];
+            System.assertNotEquals(null, saved.ActualEndTime);
+            System.assertEquals('Jane Customer', saved.Customer_Signed_By__c);
+            System.assertEquals('Replaced the fuser unit', saved.Description);
+            System.assertNotEquals(null, result.reportId);
+            System.assertEquals(3, [SELECT COUNT() FROM ContentDocumentLink WHERE LinkedEntityId = :sa.Id], 'Two signatures and one report');
+        }
     }
 
     @IsTest
     static void missingSignatureIsRejected() {
-        ServiceAppointment sa = newAppointment();
-        try {
-            CompleteInterventionController.completeIntervention(sa.Id, null, 'Jane Customer', PNG, '');
-            System.assert(false, 'Should have thrown');
-        } catch (AuraHandledException e) {
-            System.assertEquals(0, [SELECT COUNT() FROM ContentDocumentLink WHERE LinkedEntityId = :sa.Id], 'Nothing saved');
+        System.runAs(ToolkitTestSupport.toolkitUser()) {
+            ServiceAppointment sa = newAppointment();
+            try {
+                CompleteInterventionController.completeIntervention(sa.Id, null, 'Jane Customer', PNG, '');
+                System.assert(false, 'Should have thrown');
+            } catch (AuraHandledException e) {
+                System.assertEquals(0, [SELECT COUNT() FROM ContentDocumentLink WHERE LinkedEntityId = :sa.Id], 'Nothing saved');
+            }
         }
     }
 
     @IsTest
     static void reportControllerLoadsTheAppointment() {
-        ServiceAppointment sa = newAppointment();
-        PageReference page = Page.ServiceReport;
-        page.getParameters().put('id', sa.Id);
-        page.getParameters().put('tech', 'not-an-id');
-        Test.setCurrentPage(page);
-        ServiceReportController ctrl = new ServiceReportController();
-        System.assertEquals(sa.Id, ctrl.appointment.Id);
-        System.assertEquals(null, ctrl.technicianSignatureUrl, 'Invalid ids are ignored');
+        System.runAs(ToolkitTestSupport.toolkitUser()) {
+            ServiceAppointment sa = newAppointment();
+            PageReference page = Page.ServiceReport;
+            page.getParameters().put('id', sa.Id);
+            page.getParameters().put('tech', 'not-an-id');
+            Test.setCurrentPage(page);
+            ServiceReportController ctrl = new ServiceReportController();
+            System.assertEquals(sa.Id, ctrl.appointment.Id);
+            System.assertEquals(null, ctrl.technicianSignatureUrl, 'Invalid ids are ignored');
+        }
     }
 }
